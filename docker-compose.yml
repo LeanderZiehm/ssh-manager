@@ -1,0 +1,8 @@
+services:
+  ssh-key-registry:
+    build: .
+    container_name: ssh-key-registry
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./ssh_keys.db:/app/ssh_keys.db
