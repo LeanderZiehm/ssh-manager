@@ -3,7 +3,7 @@ services:
     build: .
     container_name: ssh-key-registry
     ports:
-      - "8000:8000"
+      - "9000:9000"
     volumes:
       - ssh_data:/app/data
 

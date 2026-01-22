@@ -86,4 +86,4 @@ def get_key(key_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("ssh_key_registry:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("ssh_key_registry:app", host="0.0.0.0", port=9000, reload=True)
