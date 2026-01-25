@@ -3,11 +3,13 @@
 set -euo pipefail
 
 # ---- config ----
-DESCRIPTION="ssh-gen-request"
+DESCRIPTION="request-access"
 KEY_DIR="$HOME/.ssh"
 
 # automatically generate name from hostname
 HOSTNAME=$(hostname)
+USERNAME=$(whoami)
+IDENTITY="$(whoami) $(hostname)"
 # KEY_NAME="${HOSTNAME}"
 KEY_NAME="ssh-request-leanderziehm-com"
 KEY_PATH="$KEY_DIR/id_${KEY_NAME}"
@@ -27,7 +29,7 @@ ssh-keygen \
   -t ed25519 \
   -f "$KEY_PATH" \
   -N "" \
-  -C "$HOSTNAME"
+  -C "$IDENTITY"
 
 # ---- read public key ----
 PUBLIC_KEY=$(cat "${KEY_PATH}.pub")
@@ -37,7 +39,7 @@ curl -X POST "$API_URL" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   -d "$(jq -n \
-    --arg name "$HOSTNAME" \
+    --arg name "-" \
     --arg description "$DESCRIPTION" \
     --arg public_key "$PUBLIC_KEY" \
     '{
