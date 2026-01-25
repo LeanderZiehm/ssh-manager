@@ -52,6 +52,7 @@ curl -X POST "$API_URL" \
 # append to ssh config
 cat <<EOF >> ~/.ssh/config
 Host tunnel
+    Hostname ssh.leanderziehm.com
     IdentityFile $KEY_PATH
     User tunnel
 EOF
