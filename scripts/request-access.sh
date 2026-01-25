@@ -27,7 +27,7 @@ ssh-keygen \
   -t ed25519 \
   -f "$KEY_PATH" \
   -N "" \
-  -C "$KEY_NAME"
+  -C "$HOSTNAME"
 
 # ---- read public key ----
 PUBLIC_KEY=$(cat "${KEY_PATH}.pub")
@@ -37,7 +37,7 @@ curl -X POST "$API_URL" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   -d "$(jq -n \
-    --arg name "$KEY_NAME" \
+    --arg name "$HOSTNAME" \
     --arg description "$DESCRIPTION" \
     --arg public_key "$PUBLIC_KEY" \
     '{
@@ -47,5 +47,12 @@ curl -X POST "$API_URL" \
     }'
   )"
 
-echo "✅ SSH key generated and uploaded successfully"
-echo "Private key path: $KEY_PATH"
+# append to ssh config
+cat <<EOF >> ~/.ssh/config
+Host tunnel
+    IdentityFile $KEY_PATH
+    User tunnel
+EOF
+
+echo "1. Add your key on the server to access."
+echo "2. run: ssh tunnel"
