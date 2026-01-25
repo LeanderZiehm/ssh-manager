@@ -1,18 +1,18 @@
-# Use official Python slim image
-FROM python:3.12-slim
+# Base image
+FROM python:3.14-slim AS base
 
-# Set work directory
+# Set working directory
 WORKDIR /app
 
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install UV
+# RUN pip install --upgrade pip && pip install uv
+RUN pip install uv
+RUN uv venv
 
-# Copy the app
+COPY pyproject.toml .
+
+RUN uv pip install -r pyproject.toml
+
 COPY main.py .
 
-# Expose port
-EXPOSE 9000
-
-# Command to run the app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000"]
