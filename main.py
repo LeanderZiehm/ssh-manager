@@ -5,6 +5,11 @@ from typing import List
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime
+from fastapi.openapi.docs import get_swagger_ui_html
+
+import platform
+import socket
+# import psutil
 
 DATABASE_URL = "sqlite:///data/ssh_keys.db"
 
@@ -39,6 +44,34 @@ class SSHKeyOut(BaseModel):
 
 app = FastAPI(title="SSH Key Registration")
 
+@app.get("/", include_in_schema=False)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="OCR API Docs")
+
+@app.get("/system_info")
+def system_info():
+    uname = platform.uname()
+    # cpu_percent = psutil.cpu_percent(interval=1)
+    # memory = psutil.virtual_memory()
+    # disk = psutil.disk_usage("/")
+    
+    return {
+        "hostname": socket.gethostname(),
+        "os": f"{uname.system} {uname.release}",
+        # "cpu_cores": psutil.cpu_count(logical=True),
+        # "cpu_usage_percent": cpu_percent,
+        # "memory_total": memory.total,
+        # "memory_available": memory.available,
+        # "memory_usage_percent": memory.percent,
+        # "disk_total": disk.total,
+        # "disk_used": disk.used,
+        # "disk_free": disk.free,
+        # "disk_usage_percent": disk.percent,
+        # "uptime_seconds": psutil.boot_time()
+    }
+
+
+
 @app.post("/register", response_model=SSHKeyOut)
 def register_key(key_data: SSHKeyCreate):
     """
@@ -71,18 +104,6 @@ def list_keys():
     keys = db.query(SSHKeyRequest).order_by(SSHKeyRequest.created_at.desc()).all()
     db.close()
     return keys
-
-@app.get("/keys/{key_id}", response_model=SSHKeyOut)
-def get_key(key_id: int):
-    """
-    Retrieve a single key by ID.
-    """
-    db = SessionLocal()
-    key = db.query(SSHKeyRequest).filter(SSHKeyRequest.id == key_id).first()
-    db.close()
-    if not key:
-        raise HTTPException(status_code=404, detail="Key not found")
-    return key
 
 if __name__ == "__main__":
     import uvicorn

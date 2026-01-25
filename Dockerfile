@@ -13,6 +13,6 @@ COPY pyproject.toml .
 
 RUN uv pip install -r pyproject.toml
 
-COPY src src
+COPY main.py .
 
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "9000"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000"]
